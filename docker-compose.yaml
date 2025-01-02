@@ -1,0 +1,78 @@
+version: '3.8'
+
+services:
+  api:
+    image: datascientest/fastapi:1.0.0
+    container_name: api
+    ports:
+      - "8000:8000"
+    volumes:
+      - logs:/api_log
+    networks:
+      - test_network
+
+  authentication_test:
+    build:
+      context: .
+      dockerfile: Dockerfile
+    container_name: authentication_test
+    entrypoint: ["python", "/app/test_authentication.py"]
+    depends_on:
+      - api
+    volumes:
+      - scripts:/app
+      - logs:/api_log
+    networks:
+      - test_network
+    environment:
+      LOG: "1"
+  
+  authorization_test:
+    build:
+      context: .
+      dockerfile: Dockerfile
+    container_name: authorization_test
+    entrypoint: ["python", "/app/test_authorization.py"]
+    depends_on:
+      - authentication_test
+    volumes:
+      - scripts:/app
+      - logs:/api_log
+    networks:
+      - test_network
+    environment:
+      LOG: "1"
+
+  content_test:
+    build:
+      context: .
+      dockerfile: Dockerfile
+    container_name: content_test
+    entrypoint: ["python", "/app/test_content.py"]
+    depends_on:
+      - authorization_test
+    volumes:
+      - scripts:/app
+      - logs:/api_log
+    networks:
+      - test_network
+    environment:
+      LOG: "1"
+
+networks:
+  test_network:
+
+volumes:
+  scripts:
+    driver: local
+    driver_opts:
+      type: none
+      o: bind
+      device: ./scripts
+
+  logs:
+    driver: local
+    driver_opts:
+      type: none
+      o: bind
+      device: ./logs
