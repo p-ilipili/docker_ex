@@ -66,4 +66,7 @@ Use for loops to cycle through users, urls and sentences.
 Create dependencies between the containers to order the tests and avoid simultaneous writing to the log file.
 And some other stuff.
 
+**NB: don't forget to create the 'logs' folder. This could be added in the code with a check 'if exists'.**
+
+
 
